@@ -1,1 +1,19 @@
-<h1>Welcome to our Bookstore!</h1>
+<h1>Create Author</h1>
+
+
+<body>
+    <div class="createAuthor">
+        <form action="/author/create" method="POST">
+            <label for="authorName">Author Full Name:</label>
+            <input type="text" id="authorName" name="authorName" required>
+            <br>
+            <label for="authorBiography">Author Biography:</label>
+            <input type="text" id="authorBiography" name="authorBiography" required>
+            <br>
+            <label for="authorPublisher">Publisher:</label>
+            <input type="text" id="authorPublisher" name="authorPublisher" required>
+            <br>
+            <button>Create Author</button>
+        </form>
+    </div>
+</body>

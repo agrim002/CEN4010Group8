@@ -1,5 +1,5 @@
 const express = require ('express');
-User = require('../schemas/userSchema');
+const User = require('../schemas/userSchema');
 const router = express.Router();
 
 router.get('/create', (req,res) => res.render('CreateUser'));

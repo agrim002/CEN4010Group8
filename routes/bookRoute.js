@@ -4,9 +4,6 @@ Book = require('../schemas/bookSchema');
 
 // Create book
 router.get('/create', (req,res) => res.render('CreateBook'));
-//router.get('/create', (req,res) => res.send('Page to Create Book'));
-//router.get('/', (req,res) => res.render('Home'));
-//router.get('/create', (req,res) => res.render('Home');
 
 router.post('/create', (req, res) => {
 
@@ -25,34 +22,7 @@ router.post('/create', (req, res) => {
 });
 
 
-/*router.post('/create', (req, res) => {
 
-    const book = new Book({
-        bookISBN,
-        bookName,
-        bookDescription,
-        bookPrice,
-        bookAuthor,
-        bookGenre,
-        bookPublisher,
-        bookPublishedYear,
-        bookCopiesSold,
-        bookRating
-    }        
-    );
-    
-    // save the book and check for any errors
-    book.save() 
-        .then((result) => {
-            res.send(result)
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-
-    console.log(book);
-});
-*/
 /*router.post('/create', (req, res) => {
 
     var book = new Book();
@@ -91,18 +61,29 @@ router.get('/view', (req, res) => {
             console.log(err);
         });
 });
+//view by Genre
+router.get('/view/genre/:genre', async (req, res) => {
+    const genre = req.params.genre;
+    const book = await Book.find({bookGenre: genre});
+    res.send(book);
+});
 
-router.get('/view/genre', (req,res) => res.send('View by Genre'));
 router.get('/view/top', (req,res) => res.send('View by Top Sellers'));
 router.get('/view/rating', (req,res) => res.send('View by Rating'));
 router.get('/view/number', (req,res) => res.send('View by Number of Books at a time'));
 
-router.get('/view/ISBN', async (req, res) => {
+//view by ISBN
+router.get('/view/ISBN/:ISBN', async (req, res) => {
     const ISBN = req.params.ISBN;
-    const book = await Book.findOne({ISBN: ISBN});
+    const book = await Book.findOne({bookISBN: ISBN});
     res.send(book);
 });
 
-router.get('/view/author', (req,res) => res.send('View by Author'));
+//view by Author Name
+router.get('/view/author/:author', async (req, res) => {
+    const author = req.params.author;
+    const book = await Book.find({bookAuthor: author});
+    res.send(book);
+});
 
 module.exports = router;

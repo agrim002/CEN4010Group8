@@ -1,7 +1,6 @@
 const express = require('express');
-const { mongo, Mongoose } = require('mongoose');
-const router = express.Router();
 const Book = require('../schemas/bookSchema');
+const router = express.Router();
 
 // Create book page to render EJS doc
 router.get('/create', (req,res) => res.render('CreateBook'));

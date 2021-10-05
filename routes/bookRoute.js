@@ -1,55 +1,46 @@
 const express = require('express');
+const { mongo, Mongoose } = require('mongoose');
 const router = express.Router();
-Book = require('../schemas/bookSchema');
+const Book = require('../schemas/bookSchema');
 
-// Create book
+// Create book page to render EJS doc
 router.get('/create', (req,res) => res.render('CreateBook'));
 
 router.post('/create', (req, res) => {
+    //create variable for each field to then add to database
+    var bookISBN = req.body.bookISBN;
+    var bookName = req.body.bookName;
+    var bookDescription = req.body.bookDescription;
+    var bookPrice = req.body.bookPrice;
+    var bookAuthor = req.body.bookAuthor;
+    var bookGenre = req.body.bookGenre;
+    var bookPublisher = req.body.bookPublisher;
+    var bookPublishedYear = req.body.bookPublishedYear;
+    var bookCopiesSold = req.body.bookCopiesSold;
+    var bookRating = req.body.bookRating;
 
-    const book = new Book(req.body);
-    
-    // save the book and check for any errors
-    book.save() 
-        .then((result) => {
-            res.send(result)
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-
-    console.log(book);
-});
-
-
-
-/*router.post('/create', (req, res) => {
-
-    var book = new Book();
-
-    book._id = req.body._id;
-    book.bookISBN = req.body.bookISBN;
-    book.bookName = req.body.bookName;
-    book.bookDescription = req.body.bookDescription;
-    book.bookPrice = req.body.bookPrice;
-    book.bookAuthor = req.body.bookAuthor;
-    book.bookGenre = req.body.bookGenre;
-    book.bookPublisher = req.body.bookPublisher;
-    book.bookPublishedYear = req.body.bookPublishedYear;
-    book.bookCopiesSold = req.body.bookCopiesSold;
-    book.bookRating = req.body.bookRating;
-    
-    // save the book and check for any errors
-    book.save(function (err) {
-        if (err)
-            res.json(err);
-        res.json({
-            message: 'New book created!',
-            data: book
-        });
+    //build book to add to database
+    const newBook = new Book({
+        bookISBN,
+        bookName,
+        bookDescription,
+        bookPrice,
+        bookAuthor,
+        bookGenre,
+        bookPublisher,
+        bookPublishedYear,
+        bookCopiesSold,
+        bookRating
     });
+    
+    // save the book and check for any errors
+    newBook.save((err,newBook) => {
+        if (err) return console.log(err);
+        console.log(newBook);
+        res.send("Book was created!");
+    })
 });
-*/
+
 
 //view all books
 router.get('/view', (req, res) => {
@@ -61,25 +52,46 @@ router.get('/view', (req, res) => {
             console.log(err);
         });
 });
-//view by Genre
+
+//view books by genre
 router.get('/view/genre/:genre', async (req, res) => {
     const genre = req.params.genre;
     const book = await Book.find({bookGenre: genre});
     res.send(book);
 });
 
-router.get('/view/top', (req,res) => res.send('View by Top Sellers'));
-router.get('/view/rating', (req,res) => res.send('View by Rating'));
-router.get('/view/number', (req,res) => res.send('View by Number of Books at a time'));
+//view top 10 bestseller books based on books sold
+router.get('/view/top', async (req, res) => {
+    const top = 10;
+    const book = await Book.find().sort({bookCopiesSold:-1}).limit(top);
+    res.send(book);
+});
 
-//view by ISBN
+//view books of certain rating and higher
+router.get('/view/rating/:rating', async (req, res) => {
+    const rating = req.params.rating;
+    const book = await Book.find({bookRating: {$gte :rating}}).sort({bookRating:-1});
+    res.send(book);
+});
+
+//Do we need this? This can be an input to ask how many books to display at a time
+router.get('/view/number', (req,res) => res.send('View by Number of Books at a time'));
+//view certain number of books at a time sorted by book name
+//might need to clarify functionality with professor
+router.get('/view/number/:number', async (req, res) => {
+    const number = parseInt(req.params.number,10);
+    const book = await Book.find().sort({bookName:1}).limit(number);
+    res.send(book);
+});
+
+//view books by ISBN
 router.get('/view/ISBN/:ISBN', async (req, res) => {
     const ISBN = req.params.ISBN;
     const book = await Book.findOne({bookISBN: ISBN});
     res.send(book);
 });
 
-//view by Author Name
+//view books by Author
 router.get('/view/author/:author', async (req, res) => {
     const author = req.params.author;
     const book = await Book.find({bookAuthor: author});

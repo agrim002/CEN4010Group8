@@ -2,8 +2,16 @@ const mongoose = require('mongoose');
 
 const authorSchema = new mongoose.Schema({
     authorName: {
-        type: String,
-        required: true
+        type: Object,
+        required: true,
+            authorFirst:{
+                type: String,
+                required: true
+            },
+            authorLast:{
+                type: String,
+                required: true
+            }
     },
     authorBiography: {
         type: String,
@@ -13,7 +21,6 @@ const authorSchema = new mongoose.Schema({
         type: String
     }
 });
-
 
 const Author = module.exports = mongoose.model('Author', authorSchema);
 

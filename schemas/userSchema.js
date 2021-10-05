@@ -2,17 +2,28 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     userName: {
-        type: String,
-        required: true
+        type: Object,
+        required: true,
+            userFirst:{
+                type: String,
+                required: true
+            },
+            userLast:{
+                type: String,
+                required: true
+            }
     },
     userEmail: {
         type: String,
-        required: true
+        required: true,
+        match: /.+\@.+\..+/,
+        unique: true
     },
     userPassword: {
         type: String,
         required: true
     },
+    
     userAddress: {
         type: Object,
         required: true,
@@ -36,9 +47,6 @@ const userSchema = new mongoose.Schema({
     //create schema for CC or add in here?
 });
 
+const User = mongoose.model('User', userSchema);
 
-const User = module.exports = mongoose.model('User', userSchema);
-
-module.exports.get = function (callback, limit) {
-    User.find(callback).limit(limit);
-}
+module.exports = User;

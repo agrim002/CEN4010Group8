@@ -4,7 +4,11 @@ User = require('../schemas/userSchema');
 
 router.get('/create', (req,res) => res.send('Create User'));
 
-router.get('/get', (req,res) => res.send('Retrieve User'));
+router.get('/get/:userE', async (req, res) => {
+    const userE = req.params.userE;
+    const user = await User.findOne({userEmail: userE});
+    res.send(user);
+});
 
 router.get('/update', (req,res) => res.send('Update User'));
 

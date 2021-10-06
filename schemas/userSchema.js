@@ -43,8 +43,22 @@ const userSchema = new mongoose.Schema({
                 type: String,
                 required: true
             }
+    },
+    userCC:{
+        type: Object,
+        userCCNumber:{
+            type: String,
+            required: true
+        },
+        userCCExpiration:{
+            type: String,
+            required: true
+        },
+        userCCSecurity:{
+            type: String,
+            required: true
+        }
     }
-    //create schema for CC or add in here?
 });
 
 const User = mongoose.model('User', userSchema);

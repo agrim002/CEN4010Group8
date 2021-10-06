@@ -1,1 +1,33 @@
-<h1>Welcome to our Bookstore!</h1>
+<h1>Register User</h1>
+
+<body>
+    <div class="createUser">
+        <form action="/user/create" method="POST">
+            <label for="userFirst">First Name:</label>
+            <input type="text" id="userFirst" name="userFirst" required>
+            <br>
+            <label for="userLast">Last Name:</label>
+            <input type="text" id="userLast" name="userLast" required>
+            <br>
+            <label for="userEmail">Email:</label>
+            <input type="text" id="userEmail" name="userEmail" required>
+            <br>
+            <label for="userPassword">Password:</label>
+            <input type="text" id="userPassword" name="userPassword" required>
+            <br>
+            <label for="userStreet">Address:</label>
+            <input type="text" id="userStreet" name="userStreet" required>
+            <br>
+            <label for="userCity">Author:</label>
+            <input type="text" id="userCity" name="userCity" required>
+            <br>
+            <label for="userState">Genre:</label>
+            <input type="text" id="userState" name="userState" required>
+            <br>
+            <label for="userZip">Publisher:</label>
+            <input type="text" id="userZip" name="userZip" required>
+            <br>          
+            <button>Create Book</button>
+        </form>
+    </div>
+</body>

@@ -1,10 +1,21 @@
 const mongoose = require('mongoose');
 
 const ratingSchema = new mongoose.Schema({
-    bookISBN: {
-        //type: String,
-        //required: true
-    }
+    bookComment: {
+        type: String,
+        required: true
+    },
+
+    bookRating: {
+        type: String,
+        required: true
+},
+
+    bookComment: {
+        type: Object,
+        required: true
+}
+        
 });
 
 

@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    
     userAddress: {
         type: Object,
         required: true,
@@ -45,12 +44,16 @@ const userSchema = new mongoose.Schema({
             }
     },
     userCC:{
-        type: Object,
+        type: Array,
         userCCNumber:{
             type: String,
             required: true
         },
-        userCCExpiration:{
+        userCCExpMonth:{
+            type: String,
+            required: true
+        },
+        userCCExpYear:{
             type: String,
             required: true
         },

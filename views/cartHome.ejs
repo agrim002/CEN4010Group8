@@ -1,0 +1,22 @@
+<h1>Access Shopping Cart</h1>
+
+<body>
+    <p><i> Access an existing shopping cart</i></p>
+    <div class="access_cart">
+        <form action="/cart/view" method="POST">
+            <label for="user_email">Enter User Email: </label>
+            <input type="text" id="user_email" name="user_email" required>
+            <button>Access Cart</button>
+        </form>
+    </div>
+    <p><i> Create a new shopping cart</i></p>
+    <div class="create_cart">
+        <form action="/cart/create" method="POST">
+            <label for="user_email">Enter User Email: </label>
+            <input type="text" id="user_email" name="user_email" required>
+            <button>Create Cart</button>
+        </form>
+    </div>
+    <p>There are currently <%= cart_amount %> carts </p>
+    
+</body>

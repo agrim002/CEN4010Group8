@@ -108,9 +108,11 @@ router.post('/update', async (req,res) =>{
             userAddress: newUserAddress
         }},
         {upsert: true} ,
+
+        //router.get('/user/create', (req,res) => res.send('User Updated'))
         function(err, res){
             if (err) return console.log(err);
-            console.log(userEmail + " updated"); 
+            console.log(userEmail + " updated");     
         }
     );
 });

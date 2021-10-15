@@ -38,6 +38,27 @@ router.get('/get/:username', async (req, res) => {
     
     res.send(user);
 });
+/*
+router.get('/addCC/', (req,res) => res.render('createCC'));
+router.post('/addCC', async (req, res) => {
+    const userEmail = req.body.userEmail;
+
+    var newUserCC = {
+        userCCNumber: req.body.userCCNumber,
+        userCCExpMonth: req.body.userCCExpMonth,
+        userCCExpYear: req.body.userCCExpYear,
+        userCCSecurity: req.body.userCCSecurity
+    }
+
+    User.findOneAndUpdate({userEmail: userEmail}, {$push:{userCC: newUserCC}},{upsert: true} ,function(err, res){
+        if(err){
+            throw err;
+        }
+        else{
+            console.log(userEmail + " updated")
+        }
+    });
+});*/
 
 router.get('/addCC/', (req,res) => res.render('createCC'));
 router.post('/addCC', async (req, res) => {
@@ -50,14 +71,26 @@ router.post('/addCC', async (req, res) => {
         userCCSecurity: req.body.userCCSecurity
     }
 
-    User.findOneAndUpdate({userEmail: userEmail}, {$set:{userCC: newUserCC}},{upsert: true} ,function(err, res){
-        if(err){
-            throw err;
-        }
-        else{
-            console.log(userEmail + " updated")
-        }
+    let result = await User.find({
+        userEmail: userEmail
     });
+    //console.log(result);
+
+    if (result.length == 0) {
+        res.send('User does not exist.');
+    }
+    else {
+        await User.updateOne(
+            {
+                userEmail: userEmail
+            },
+            {
+                $push: {
+                    userCC: newUserCC
+                }
+            });
+        res.send('Successfully added credit card');
+    }
 });
 
 router.get('/update', (req,res) => res.render('UpdateUser'));

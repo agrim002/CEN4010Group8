@@ -12,7 +12,7 @@ const router = express.Router();
 CartSchema = require('../schemas/cartSchema'); // Unsure if it is a good idea to store carts via a database 
 
 // Import Cart object
-var Cart = require('./cart.js');
+/*var Cart = require('./cart.js');
 var cart_list = new Array();
 	
 router.use(express.urlencoded({ extended: true }));
@@ -174,4 +174,4 @@ function get_index(user_id)
     }
 
     return id_index;
-} 
+} */

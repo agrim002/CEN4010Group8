@@ -21,6 +21,10 @@ mongoose.connect(db, { useNewUrlParser: true })
     .then(() => console.log('MongoDB Connected...'))
     .catch(err => console.log(err));
 
+//EJS
+app.use(expressLayouts);
+app.set('view engine', 'ejs');
+
 // routes import
 app.use('/', require('./routes/welcomeRoute'));
 app.use('/book', require('./routes/bookRoute'));
@@ -28,9 +32,7 @@ app.use('/author', require('./routes/authorRoute'));
 app.use('/user', require('./routes/userRoute'));
 app.use('/rating', require('./routes/ratingRoute'));
 app.use('/cart', require('./routes/cartRoute'));
-//EJS
-app.use(expressLayouts);
-app.set('view engine', 'ejs');
+
 
 // middleware
 app.use(cors());

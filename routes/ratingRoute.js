@@ -49,9 +49,37 @@ router.get('/find/bookName/:bookName', async (req,res) => {
 
     
     var book = req.params.bookName;
-    var comment = await Rating.find({bookName: book});
-    res.send(comment);
+    //const bookResults = await Rating.find({bookName: book});
+    //res.send(bookResults);
+    
+    /*
+    var book = req.params.bookName;
+    const fiveResults = await Rating.find({bookName: book, bookRating: 5});
+    res.send(fiveResults);
+    const fourResults = await Rating.find({bookName: book, bookRating: 4});
+    res.send(fourResults);
+    */
+    /*
+    const rateResults = bookResults.map(bookResults => bookResults.bookRating);
+    const sortedRates = rateResults.sort(function(a, b) {return b-a});
+    res.send(sortedRates);
+    */
 
+    const bookResults = await Rating.find({bookName: book}).sort({bookRating: -1});
+    
+    res.send(bookResults);
+
+    
+
+    
+    
+    
+    
+     
+
+
+
+    
 
 
 });

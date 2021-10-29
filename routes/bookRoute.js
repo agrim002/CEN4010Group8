@@ -16,7 +16,7 @@ router.post('/create', (req, res) => {
     var bookPublisher = req.body.bookPublisher;
     var bookPublishedYear = req.body.bookPublishedYear;
     var bookCopiesSold = req.body.bookCopiesSold;
-    var bookRating = req.body.bookRating;
+    //var bookRating = req.body.bookRating;
 
     //build book to add to database
     const newBook = new Book({
@@ -29,7 +29,7 @@ router.post('/create', (req, res) => {
         bookPublisher,
         bookPublishedYear,
         bookCopiesSold,
-        bookRating
+        //bookRating
     });
     
     // save the book and check for any errors
@@ -53,11 +53,14 @@ router.get('/view', (req, res) => {
 });
 
 //view books by genre
+router.get('/view/genre/', async (req, res) => res.render('viewByGenre'));
 router.get('/view/genre/:genre', async (req, res) => {
     const genre = req.params.genre;
     const book = await Book.find({bookGenre: genre});
     res.send(book);
 });
+
+
 
 //view top 10 bestseller books based on books sold
 router.get('/view/top', async (req, res) => {
@@ -67,6 +70,7 @@ router.get('/view/top', async (req, res) => {
 });
 
 //view books of certain rating and higher
+router.get('/view/rating/', async (req, res) => res.render('viewByRating'));
 router.get('/view/rating/:rating', async (req, res) => {
     const rating = req.params.rating;
     const book = await Book.find({bookRating: {$gte :rating}}).sort({bookRating:-1});
@@ -95,6 +99,99 @@ router.get('/view/author/:author', async (req, res) => {
     const author = req.params.author;
     const book = await Book.find({bookAuthor: author});
     res.send(book);
+});
+
+
+//Combined form of rating and comment 
+router.get('/rateBook', (req,res) => res.render('RateABook'));
+router.post('/rateBook', async (req, res) => {
+    const bookName = req.body.bookName;
+    const bookRating = req.body.bookRating;
+    const bookComment = req.body.bookComment;
+
+    var newBookRating = {
+        ratingDate: new Date(),
+        rating: parseInt(bookRating),
+        comment: bookComment
+    }
+
+    let result = await Book.find({
+        bookName: bookName
+    });
+
+    if (result.length == 0) {
+        res.send('Book does not exist.');
+    }
+    else {
+        await Book.updateOne(
+            {
+                bookName: bookName
+            },
+            {
+                $push: {
+                    allRatings: newBookRating
+                }
+            });
+        res.send('Successfully rated the book.');
+    }
+});
+
+//View all average ratings
+router.get('/averageRating', async (req, res) => {
+    const avgRatingArray = [];
+    const pipeline = [
+        {
+          '$unwind': {
+            'path': '$allRatings', 
+            'includeArrayIndex': 'string', 
+            'preserveNullAndEmptyArrays': false
+          }
+        }, {
+          '$group': {
+            '_id': '$bookName', 
+            'averageRating': {
+              '$avg': '$allRatings.rating'
+            }
+          }
+        }
+      ];
+    
+      const aggCursor = Book.aggregate(pipeline);
+      (await aggCursor).forEach(book => {
+          avgRatingArray.push(`${book._id}: ${book.averageRating}`);    
+      });
+
+      res.send(avgRatingArray);
+});
+
+//Sort By Rating
+router.get('/view/sortByRating/:name', async (req, res) => {
+    const book = req.params.name;
+    const ratingSorted = [];
+    const pipeline = [
+        {
+          '$unwind': {
+            'path': '$allRatings', 
+            'includeArrayIndex': 'string', 
+            'preserveNullAndEmptyArrays': false
+          }
+        }, {
+          '$match': {
+            'bookName': book
+          }
+        }, {
+          '$sort': {
+            'allRatings.rating': -1
+          }
+        }
+      ];
+
+    const aggCursor = Book.aggregate(pipeline);
+    (await aggCursor).forEach(book => {
+        ratingSorted.push(`${book.bookName}: Rating:${book.allRatings.rating}, ${book.allRatings.comment}`);    
+    });
+
+    res.send(ratingSorted);
 });
 
 module.exports = router;

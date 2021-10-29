@@ -1,0 +1,18 @@
+<h1>Rate a Book</h1>
+
+<body>
+    <div class="createRating">
+        <form action="/book/rateBook" method="POST">
+            <label for="bookName">Book Title:</label>
+            <input type="text" id="bookName" name="bookName" required>
+            <br>
+            <label for="bookRating">Rating:</label>
+            <input type="number" id="bookRating" name="bookRating" required> 
+            <br>
+            <label for="bookComment">Comment:</label>
+            <input type="text" id="bookComment" name="bookComment" required> 
+            <br>
+            <button>Rate Book</button>
+        </form>
+    </div>
+</body>

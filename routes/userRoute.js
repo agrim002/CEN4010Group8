@@ -1,5 +1,6 @@
 const express = require ('express');
 const User = require('../schemas/userSchema');
+const Book = require('../schemas/bookSchema');
 const router = express.Router();
 
 router.get('/create', (req,res) => res.render('CreateUser'));
@@ -17,12 +18,14 @@ router.post('/create', (req,res) => {
         userZip: req.body.userZip
     }
     var userCC = {};
+    var userCart = [];
     const newUser = new User({
         userName,
         userEmail,
         userPassword,
         userAddress,
-        userCC
+        userCC,
+        userCart
     });
 
     newUser.save((err,newUser) => {
@@ -148,6 +151,40 @@ router.post('/update', async (req,res) =>{
             console.log(userEmail + " updated");     
         }
     );
+});
+
+router.get('/addToCart', (req,res) => res.render('addToCart'));
+router.post('/addToCart', async (req,res) => {  
+    const email = req.body.email;
+    const bookName = req.body.bookName;
+
+
+    let bookResult = await Book.find({
+        bookName: bookName
+    });
+
+    let emailResult = await User.find({
+        userEmail: email
+    });
+
+    if (bookResult.length == 0) {
+        res.send('Book does not exist.');
+    }
+    if (emailResult.length == 0) {
+        res.send('email does not exist.');
+    }
+    else {
+        await User.updateOne(
+            {
+                userEmail: email
+            },
+            {
+                $push: {
+                    userShoppingCart: bookName
+                }
+            });
+        res.send('Successfully added book to cart.');
+    }
 });
 
 module.exports = router;

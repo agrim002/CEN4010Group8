@@ -43,24 +43,27 @@ const userSchema = new mongoose.Schema({
                 required: true
             }
     },
-    userCC:{
+    userCC: {
         type: Array,
-        userCCNumber:{
+        userCCNumber: {
             type: String,
             required: true
         },
-        userCCExpMonth:{
+        userCCExpMonth: {
             type: String,
             required: true
         },
-        userCCExpYear:{
+        userCCExpYear: {
             type: String,
             required: true
         },
-        userCCSecurity:{
+        userCCSecurity: {
             type: String,
             required: true
         }
+    },
+    userShoppingCart: {
+        type: Array
     }
 });
 

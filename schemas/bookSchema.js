@@ -36,8 +36,17 @@ const bookSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    bookRating: {
-        type: Number
+    allRatings: {
+        type: Array,
+        ratingDate: {
+            type: Date
+        },
+        rating: {
+             type: Number
+        },
+        comment: {
+            type: String
+        }
     }
 });
 

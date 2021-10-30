@@ -1,6 +1,78 @@
-<h1>Shopping cart for <%= user_id %></h1>
 
+<style>
+	table, th, td {
+	  border: 1px solid black;
+	}
+	th {
+	  padding: 5px;
+	}
+	td {
+	  padding: 7px;
+	}
+</style>
+<script type="text/javascript">
+    var row = <%-JSON.stringify(book_list)%>
+    //console.log(row);
+</script>
+
+<h1>Shopping cart for <%= user_id %></h1>
 <body>
+	<!--
 	<p>Cart ID: <%= cart_id %></p>
+	<div>
+		<% if (book_list) { %>
+			<% for(var index = 0; index < book_list.length; index++) { %>	
+				<h2><%= book_list[index].bookName %></h2>
+			<% } %>
+		<% } %>
+	</div>
+	-->
+	<div>
+		<% if ((book_list) && (book_list.length > 0)) { %>
+			<table>
+				<tr>
+					<th colspan="2"> Book Name </b></th>
+					<th>ISBN</th>
+				</tr>
+				<% for(var index = 0; index < book_list.length; index++) { %>	
+				<tr>
+					<td colspan="2"><%= book_list[index].bookName %></td>
+					<td><%= book_list[index].bookISBN %></td>
+					<td border: "unset">
+						<form action="/cart/remove_book" method="POST">
+							<input type="hidden" id="user_email" name="user_email" value=<%= user_id %>>
+							<input type="hidden" id="bookISBN" name="bookISBN" value=<%= book_list[index].bookISBN %>>
+							<button><small>Remove</small></button>
+							<!--<button>Remove</button>-->
+						</form>
+					</td>
+				</tr>
+				<% } %>
+			</table>
+		<% } else { %>
+			<p>There are currently no books in your cart</p>
+		<% } %>
+	</div>
+	<br></br>
+	<div class="add_book">
+        <form action="/cart/add_book" method="POST">
+            <input type="hidden" id="user_email" name="user_email" value=<%= user_id %>>
+            <!--<label for="bookISBN">Enter Book ISBN: </label>-->
+            <input type="text" id="bookISBN" name="bookISBN" placeholder="Enter Book ISBN" required>
+            <button>Add Book to Cart</button>
+        </form>
+    </div>
+	<!--
+	<div class="remove_book">
+        <form action="/cart/remove_book" method="POST">
+            <input type="hidden" id="user_email" name="user_email" value=<%= user_id %>>
+            <label for="bookISBN">Enter Book ISBN: </label>
+            <input type="text" id="bookISBN" name="bookISBN" required>
+            <button>Remove Book from Cart</button>
+        </form>
+    </div>
+	-->
+	
 </body>
+<br></br>
 <a href="../home"><button>Shopping Cart Home</button></a>

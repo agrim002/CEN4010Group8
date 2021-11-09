@@ -64,6 +64,9 @@ const userSchema = new mongoose.Schema({
     },
     userShoppingCart: {
         type: Array
+    },
+    userWishlist: {
+        type: Array
     }
 });
 

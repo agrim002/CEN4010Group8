@@ -19,21 +19,24 @@ router.post('/create', (req,res) => {
     }
     var userCC = {};
     var userCart = [];
+    var userWishlist = [];
     const newUser = new User({
         userName,
         userEmail,
         userPassword,
         userAddress,
         userCC,
-        userCart
+        userCart,
+        userWishlist
     });
 
     newUser.save((err,newUser) => {
         if (err) return console.log(err);
         console.log(newUser);
         res.send("User was created!");
-    })
-}) 
+    });
+});
+
  
 router.get('/get/:username', async (req, res) => {
     const username = req.params.username;
@@ -153,7 +156,7 @@ router.post('/update', async (req,res) =>{
     );
 });
 
-router.get('/addToCart', (req,res) => res.render('addToCart'));
+/*router.get('/addToCart', (req,res) => res.render('addToCart'));
 router.post('/addToCart', async (req,res) => {  
     const email = req.body.email;
     const bookName = req.body.bookName;
@@ -170,7 +173,7 @@ router.post('/addToCart', async (req,res) => {
     if (bookResult.length == 0) {
         res.send('Book does not exist.');
     }
-    if (emailResult.length == 0) {
+    else if (emailResult.length == 0) {
         res.send('email does not exist.');
     }
     else {
@@ -184,6 +187,120 @@ router.post('/addToCart', async (req,res) => {
                 }
             });
         res.send('Successfully added book to cart.');
+    }
+});
+
+/*router.get('/viewCart', (req,res) => res.render('viewCart'));
+router.post('/viewCart', async (req,res) => {  
+    const email = req.body.email;
+
+    let emailResult = await User.find({
+        userEmail: email
+    });
+
+    if (emailResult.length == 0) {
+        res.send('email does not exist.');
+    }
+    else {
+        const cart = [];
+        const pipeline = [
+            {
+              '$unwind': {
+                'path': '$userShoppingCart', 
+                'includeArrayIndex': 'string', 
+                'preserveNullAndEmptyArrays': false
+              }
+            }, {
+              '$match': {
+                'userEmail': email
+              }
+            }, {
+              '$group': {
+                '_id': '$userShoppingCart'
+              }
+            }
+        ];
+        
+        const aggCursor = User.aggregate(pipeline);
+        (await aggCursor).forEach(user => {
+            cart.push(`${user._id}`);    
+        });
+
+        res.send(cart);
+    }
+});*/
+
+router.get('/addToWishlist', (req,res) => res.render('addToWishlist'));
+router.post('/addToWishlist', async (req,res) => {  
+    const email = req.body.email;
+    const bookName = req.body.bookName;
+
+
+    let bookResult = await Book.find({
+        bookName: bookName
+    });
+
+    let emailResult = await User.find({
+        userEmail: email
+    });
+
+    if (bookResult.length == 0) {
+        res.send('Book does not exist.');
+    }
+    else if (emailResult.length == 0) {
+        res.send('email does not exist.');
+    }
+    else {
+        await User.updateOne(
+            {
+                userEmail: email
+            },
+            {
+                $push: {
+                    userWishlist: bookName
+                }
+            });
+        res.send('Successfully added book to wish list.');
+    }
+});
+
+router.get('/viewWishlist', (req,res) => res.render('viewWishlist'));
+router.post('/viewWishlist', async (req,res) => {  
+    const email = req.body.email;
+
+    let emailResult = await User.find({
+        userEmail: email
+    });
+
+    if (emailResult.length == 0) {
+        res.send('email does not exist.');
+    }
+    else {
+        const wishlist = [];
+        const pipeline = [
+            {
+              '$unwind': {
+                'path': '$userWishlist', 
+                'includeArrayIndex': 'string', 
+                'preserveNullAndEmptyArrays': false
+              }
+            }, {
+              '$match': {
+                'userEmail': email
+              }
+            }, {
+              '$group': {
+                '_id': '$userWishlist'
+              }
+            }
+        ];
+        
+        const aggCursor = User.aggregate(pipeline);
+        (await aggCursor).forEach(user => {
+            wishlist.push(`${user._id}`);    
+        });
+
+        res.send(wishlist);
     }
 });
 

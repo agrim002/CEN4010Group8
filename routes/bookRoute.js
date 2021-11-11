@@ -1,5 +1,6 @@
 const express = require('express');
 const Book = require('../schemas/bookSchema');
+const User = require('../schemas/userSchema');
 const router = express.Router();
 
 // Create book page to render EJS doc
@@ -108,19 +109,28 @@ router.post('/rateBook', async (req, res) => {
     const bookName = req.body.bookName;
     const bookRating = req.body.bookRating;
     const bookComment = req.body.bookComment;
+    const ratingUser = req.body.ratingUser;
 
     var newBookRating = {
         ratingDate: new Date(),
         rating: parseInt(bookRating),
-        comment: bookComment
+        comment: bookComment,
+        ratingUser: ratingUser  //added rating user
     }
 
     let result = await Book.find({
         bookName: bookName
     });
 
+    let emailResult = await User.find({
+        userEmail: ratingUser
+    });
+
     if (result.length == 0) {
         res.send('Book does not exist.');
+    }
+    else if (emailResult.length == 0) {
+        res.send('email does not exist.');
     }
     else {
         await Book.updateOne(

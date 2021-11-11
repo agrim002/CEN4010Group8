@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
-const ratingSchema = new mongoose.Schema({ 
-    bookName: {
+const ratingSchema = new mongoose.Schema({
+    bookComment: {
         type: String,
         required: true
     },
-    
+
     bookRating: {
         type: String,
         required: true
@@ -14,15 +14,9 @@ const ratingSchema = new mongoose.Schema({
     bookComment: {
         type: Object,
         required: true
-},
-    DateStamp: {
-        type: Date,
-        default: Date.now
-    }
-
+}
+        
 });
-
-
 
 
 const Rating = module.exports = mongoose.model('Rating', ratingSchema);

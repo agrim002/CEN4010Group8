@@ -46,6 +46,9 @@ const bookSchema = new mongoose.Schema({
         },
         comment: {
             type: String
+        },
+        ratingUser: {   //added rating user
+            type: String
         }
     }
 });

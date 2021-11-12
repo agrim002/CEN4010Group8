@@ -57,7 +57,7 @@ router.get('/view', (req, res) => {
 router.get('/view/genre/', async (req, res) => res.render('viewByGenre'));
 router.get('/view/genre/:genre', async (req, res) => {
     const genre = req.params.genre;
-    const book = await Book.find({bookGenre: genre});
+    const book = await Book.find({allRatings: genre});
     res.send(book);
 });
 
@@ -73,9 +73,41 @@ router.get('/view/top', async (req, res) => {
 //view books of certain rating and higher
 router.get('/view/rating/', async (req, res) => res.render('viewByRating'));
 router.get('/view/rating/:rating', async (req, res) => {
-    const rating = req.params.rating;
-    const book = await Book.find({bookRating: {$gte :rating}}).sort({bookRating:-1});
-    res.send(book);
+    const rating = parseInt(req.params.rating);
+    const bookArray = [];
+    const pipeline = [
+        {
+          '$unwind': {
+            'path': '$allRatings', 
+            'includeArrayIndex': 'string', 
+            'preserveNullAndEmptyArrays': false
+          }
+        }, {
+          '$group': {
+            '_id': '$bookName', 
+            'averageRating': {
+              '$avg': '$allRatings.rating'
+            }
+          }
+        }, {
+          '$match': {
+            'averageRating': {
+              '$gte': rating
+            }
+          }
+        }, {
+          '$sort': {
+            'averageRating': -1
+          }
+        }
+      ];
+    
+      const aggCursor = Book.aggregate(pipeline);
+      (await aggCursor).forEach(book => {
+          bookArray.push(`Book: ${book._id}, Average Rating: ${book.averageRating}`);    
+      });
+
+      res.send(bookArray);
 });
 
 //Do we need this? This can be an input to ask how many books to display at a time
@@ -198,7 +230,7 @@ router.get('/view/sortByRating/:name', async (req, res) => {
 
     const aggCursor = Book.aggregate(pipeline);
     (await aggCursor).forEach(book => {
-        ratingSorted.push(`${book.bookName}: Rating:${book.allRatings.rating}, ${book.allRatings.comment}`);    
+        ratingSorted.push(`${book.bookName}: Rating:${book.allRatings.rating}, ${book.allRatings.comment}, By: ${book.allRatings.ratingUser}`);    
     });
 
     res.send(ratingSorted);

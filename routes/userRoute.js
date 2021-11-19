@@ -154,6 +154,7 @@ router.post('/update', async (req,res) =>{
             console.log(userEmail + " updated");     
         }
     );
+res.send("User Updated");
 });
 
 /*router.get('/addToCart', (req,res) => res.render('addToCart'));

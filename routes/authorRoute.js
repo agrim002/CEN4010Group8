@@ -8,8 +8,8 @@ router.get('/create', (req,res) => res.render('CreateAuthor'));
 //create author
 router.post('/create', (req,res) => {
     var authorName = {
-        userFirst: req.body.authorFirst,
-        userLast: req.body.authorLast
+        authorFirst: req.body.authorFirst,
+        authorLast: req.body.authorLast
     }
     var authorBiography = req.body.authorBiography;
     var authorPublisher = req.body.authorPublisher;

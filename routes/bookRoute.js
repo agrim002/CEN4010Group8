@@ -57,7 +57,7 @@ router.get('/view', (req, res) => {
 router.get('/view/genre/', async (req, res) => res.render('viewByGenre'));
 router.get('/view/genre/:genre', async (req, res) => {
     const genre = req.params.genre;
-    const book = await Book.find({genre: genre});
+    const book = await Book.find({bookGenre: genre});
     res.send(book);
 });
 

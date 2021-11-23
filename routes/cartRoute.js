@@ -14,6 +14,9 @@ const router = express.Router();
 // Import Cart object
 var Cart = require('../schemas/cartSchema.js');
 var cart_list = new Array();
+
+// Import user object for validation 
+var mongoose_user = require('../schemas/userSchema');
 	
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
@@ -51,23 +54,30 @@ router.get('/create',
 	On creation, user is redirected to the view of the cart (/cart/:cart_id/view)
 	Currently this only checks for a user_email */
 router.post('/create', 
-    function (req,res) 
+    async function (req,res) 
     {
         //console.log(req.body);
 		
         var user_email = req.body.user_email;
-        var cart_id = create_cart(user_email);
+        var cart_id = await create_cart(user_email);
+        var error_message = "";
 		
 		// cheap check to see if element exists in array, else send an error message
-        if (cart_id != null)
+        if ((cart_id != null) && (cart_id != "CART_EXIST_ERROR") && (cart_id != "FAKE_USER_ERROR"))
         {
             res.redirect('./' + cart_id + '/view');
         }
-        else
+        else if (cart_id == "CART_EXIST_ERROR")
         {
-            var error_message = "Error, a cart for user \"" + user_email + "\" already exists";
+            error_message = "Error, a cart for user \"" + user_email + "\" already exists";
             res.send(error_message);
         }
+        else if (cart_id == "FAKE_USER_ERROR")
+        {
+            error_message = "Error, a cart could not be created as user \"" + user_email + "\" does not exist";
+            res.send(error_message);
+        }
+        
     }
 );
 
@@ -124,6 +134,7 @@ router.get('/:cart_id/view', cart_view_get_route);
     function cart_view_get_route(req,res) 
     {
         var cart_id = req.params.cart_id;
+        var raw_json = req.query.raw_json;
 
         //cheap check to see if element exists in array 
         if (cart_list[cart_id] != null)
@@ -137,7 +148,8 @@ router.get('/:cart_id/view', cart_view_get_route);
             (
                 function(cart_contents)
                 {
-                    if(req.params.json == true)
+                    // Check if user wants output in raw JSON, else render the view page normally
+                    if(raw_json == "true")
                     {
                         res.send(cart_contents);
                     }
@@ -254,23 +266,35 @@ module.exports = router;
 
 /* 	Create a new Cart instance and add it to Cart array (cart_list) 
 	Returns the index of the new cart in the array */
-function create_cart(user_id) 
+async function create_cart(user_id) 
 {
+    // await for database user check
+    var user_exists = await check_user_exists(user_id);
     var cart_exists = check_existing(user_id);
     var cart_id = null;
 
-    if(cart_exists == false)
+    if(user_exists == true)
     {
-        console.log(" Creating new cart...");
-        cart_list.push(new Cart(user_id));
-
-        cart_id = cart_list.length - 1;
-         
-        console.log("added new cart at index [" + cart_id + "] for user \""+ user_id + "\"" );
+        if(cart_exists == false)
+        {
+            console.log(" Creating new cart...");
+            cart_list.push(new Cart(user_id));
+    
+            cart_id = cart_list.length - 1;
+             
+            console.log("added new cart at index [" + cart_id + "] for user \""+ user_id + "\"" );
+        }
+        else if(cart_exists == true)
+        {
+            cart_id = "CART_EXIST_ERROR";
+            console.log("Cart with ID of " + user_id + " already exists");
+            
+        }
     }
-    else if(cart_exists == true)
+    else
     {
-        console.log("Cart with ID of " + user_id + " already exists");
+        // User does not exist in database
+        cart_id = "FAKE_USER_ERROR";
     }
 
     return cart_id;
@@ -402,4 +426,25 @@ async function cart_remove_book(req, res, cart_id, book_ISBN)
     return book_removed;
 }
 
+
+// Check if the given user email value coresponds to an existing user in the database
+async function check_user_exists (user_email)
+{
+    var user_exists = false;
+
+    var user_data = await mongoose_user.findOne({userEmail: user_email});
+
+    if(user_data != null)
+    {
+        user_exists = true;
+    }
+    else
+    {
+        user_exists = false;
+    }
+
+    console.log("Valid user "+ user_email +": "+ user_exists);
+
+    return user_exists;
+};
 
